@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Bannerlator Japanese XMB friends strings -->
+<resources>
+    <plurals name="xmb_fr_summary">
+        <item quantity="other">%1$d 人がオンライン · フレンド %2$d 人</item>
+    </plurals>
+    <string name="xmb_fr_add">フレンドを追加</string>
+    <string name="xmb_fr_settings">設定</string>
+    <string name="xmb_fr_section_in_game">ゲーム中</string>
+    <string name="xmb_fr_section_online">オンライン</string>
+    <string name="xmb_fr_section_away">退席中</string>
+    <string name="xmb_fr_section_offline">オフライン</string>
+    <string name="xmb_fr_section_unknown">ステータス不明</string>
+    <string name="xmb_fr_section_requests">フレンドリクエスト</string>
+    <string name="xmb_fr_wants_to_add">フレンド申請が届いています</string>
+    <string name="xmb_fr_request_sent">リクエスト送信済み</string>
+    <string name="xmb_fr_accept">承認</string>
+    <string name="xmb_fr_decline">拒否</string>
+    <string name="xmb_fr_cancel">キャンセル</string>
+    <string name="xmb_fr_message">メッセージ</string>
+    <string name="xmb_fr_game_page">ゲームページ</string>
+    <string name="xmb_fr_profile">プロフィール</string>
+    <string name="xmb_fr_remove">削除</string>
+    <string name="xmb_fr_remove_confirm">削除しますか？ もう一度押してください</string>
+    <string name="xmb_fr_empty_title">表示できるフレンドがまだいません</string>
+    <string name="xmb_fr_empty_sub">Steam からフレンドリストを受信するとここに表示されます。</string>
+    <string name="xmb_fr_signin_title">Steam にサインイン</string>
+    <string name="xmb_fr_signin_sub">誰がオンラインで何をプレイしているかを確認したり、メッセージを送ったりできます。</string>
+    <string name="xmb_fr_signin_button">Steam にサインイン</string>
+    <string name="xmb_fr_off_title">Steam フレンドはオフです</string>
+    <string name="xmb_fr_off_sub">オンにするとフレンドの表示やチャットができるようになります。オフの間はオンライン状態が共有されません。</string>
+    <string name="xmb_fr_off_button">オンにする</string>
+    <string name="xmb_fr_disconnected_title">Steam に未接続</string>
+    <string name="xmb_fr_disconnected_sub">接続するとフレンドの表示やチャットができるようになります。</string>
+    <string name="xmb_fr_connect">接続</string>
+    <string name="xmb_fr_add_title">フレンドを追加</string>
+    <string name="xmb_fr_add_search_label">名前で Steam を検索</string>
+    <string name="xmb_fr_add_search_hint">プレイヤーを検索…</string>
+    <string name="xmb_fr_add_code_label">フレンドコードで追加</string>
+    <string name="xmb_fr_add_code_hint">フレンドコードを入力</string>
+    <string name="xmb_fr_add_my_code">自分のフレンドコード</string>
+    <string name="xmb_fr_copy">コピー</string>
+    <string name="xmb_fr_code_copied">フレンドコードをコピーしました</string>
+    <string name="xmb_fr_add_button">追加</string>
+    <string name="xmb_fr_add_no_players">プレイヤーが見つかりませんでした。</string>
+    <string name="xmb_fr_result_friend">すでにフレンドです</string>
+    <string name="xmb_fr_result_pending">リクエスト承認待ち</string>
+    <string name="xmb_fr_result_player">Steam プロフィール</string>
+    <string name="xmb_fr_done">完了</string>
+    <string name="xmb_fr_close">閉じる</string>
+    <string name="xmb_fr_level">レベル %1$d</string>
+    <string name="xmb_fr_stat_games">ゲーム</string>
+    <string name="xmb_fr_stat_hours">プレイ時間</string>
+    <string name="xmb_fr_stat_two_weeks">過去 2 週間</string>
+    <string name="xmb_fr_recent">最近のプレイ</string>
+    <string name="xmb_fr_hours">%1$d 時間</string>
+    <string name="xmb_fr_view_on_steam">Steam で表示</string>
+    <string name="xmb_fr_profile_private">このプロフィールは非公開です。</string>
+    <string name="xmb_fr_loading">読み込み中…</string>
+</resources>

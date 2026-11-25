@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Bannerlator Japanese XMB downloads strings -->
+<resources>
+    <string name="xmb_dl_section_active">ダウンロード中</string>
+    <string name="xmb_dl_section_queued">待機中</string>
+    <string name="xmb_dl_section_stopped">停止中</string>
+    <string name="xmb_dl_section_installed">インストール済み</string>
+    <string name="xmb_dl_empty_title">ダウンロードはまだありません</string>
+    <string name="xmb_dl_empty_body">ストアからダウンロードしたゲームがここに表示されます。</string>
+    <string name="xmb_dl_status_downloading">ダウンロード中 · %1$d%%</string>
+    <string name="xmb_dl_status_paused">一時停止 · %1$d%%</string>
+    <string name="xmb_dl_status_paused_why">一時停止 · %1$d%% · %2$s</string>
+    <string name="xmb_dl_status_queued">順番待ち · #%1$d</string>
+    <string name="xmb_dl_status_installed">インストール済み</string>
+    <string name="xmb_dl_status_update">インストール済み · アップデートあり</string>
+    <string name="xmb_dl_status_failed">ダウンロード失敗</string>
+    <string name="xmb_dl_status_failed_why">失敗: %1$s</string>
+    <string name="xmb_dl_status_cancelled">キャンセル済み</string>
+    <string name="xmb_dl_act_pause">一時停止</string>
+    <string name="xmb_dl_act_resume">再開</string>
+    <string name="xmb_dl_act_cancel">キャンセル</string>
+    <string name="xmb_dl_act_cancel_sure">キャンセルしますか？</string>
+    <string name="xmb_dl_act_details">詳細</string>
+    <string name="xmb_dl_act_start_next">次を開始</string>
+    <string name="xmb_dl_act_launch">ゲームに追加</string>
+    <string name="xmb_dl_act_uninstall">アンインストール</string>
+    <string name="xmb_dl_act_uninstall_sure">アンインストールしますか？</string>
+    <string name="xmb_dl_act_dismiss">閉じる</string>
+    <string name="xmb_dl_added_to_games">%1$s をゲーム一覧に追加しました</string>
+</resources>
