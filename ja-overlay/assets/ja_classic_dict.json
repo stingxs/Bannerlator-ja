@@ -2798,6 +2798,13 @@
     "Global defaults": "グローバルデフォルト",
     "-- Disabled --": "-- 無効 --",
     "-- Default --": "-- デフォルト --",
+    "About layer updates": "レイヤー更新について",
+    "What changes: the Wine/Proton layer files (system32/syswow64 builtin DLLs are refreshed; DXVK, FEX/Box64 and game-installed files are left as they are). Wine finishes its own prefix update on the next launch.": "変更される内容: Wine/Proton レイヤーのファイル（system32/syswow64 の内蔵 DLL が更新されます。DXVK、FEX/Box64、およびゲームがインストールしたファイルはそのまま維持されます）。次回起動時に Wine がプレフィックスの更新を完了します。",
+    "What is kept: games, saves, shortcuts and container settings.": "保持される内容: ゲーム、セーブデータ、ショートカット、コンテナ設定。",
+    "What the update changes: only Wine's own files inside the container are refreshed to the new version. DXVK, FEX/Box64 and anything a game installed are left as they are; Wine finishes its own prefix update on the next launch.": "更新で変更される内容: コンテナ内の Wine 本体のファイルだけが新しいバージョンに置き換わります。DXVK、FEX/Box64、およびゲームがインストールしたファイルはそのまま維持され、次回起動時に Wine がプレフィックスの更新を完了します。",
+    "What is kept: installed games, saves, shortcuts and container settings.": "保持される内容: インストール済みのゲーム、セーブデータ、ショートカット、コンテナ設定。",
+    "The old layer stays installed and a backup of the registry is taken first, so \"Revert layer\" is available from this container's menu afterwards.": "古いレイヤーは端末に残され、更新前にレジストリのバックアップも作成されるため、更新後もこのコンテナのメニューから「レイヤーを戻す」を実行できます。",
+    "Close the game before updating.": "更新する前にゲームを終了してください。",
     "• Sustained Performance Mode": "• 持続パフォーマンスモード",
     "• Thread Priority Boost": "• スレッド優先度ブースト",
     "• Prefer Big Cores": "• ビッグコアを優先",
@@ -3975,7 +3982,6 @@
     "What changes: the Wine/Proton layer files (system32/syswow64 builtin DLLs are refreshed; DXVK, FEX/Box64 and game-installed files are left as they are). Wine finishes its own prefix update on the next launch.\n\nWhat is kept: games, saves, shortcuts and container settings.": "変更される内容: Wine/Proton レイヤーのファイル（system32/syswow64 の組み込み DLL が更新されます。DXVK、FEX/Box64、ゲームがインストールしたファイルはそのまま残ります）。Wine は次回起動時にプレフィックスの更新を完了します。\n\n保持される内容: ゲーム、セーブデータ、ショートカット、コンテナ設定。",
     "Make sure nothing is running in this container.": "このコンテナ内で何も実行されていないことを確認してください。",
     "Download & update": "ダウンロードして更新",
-    "About layer updates": "レイヤー更新について",
     "a newer build of the same layer,": "同じレイヤーの新しいビルド、",
     "a newer version of the same layer,": "同じレイヤーの新しいバージョン、",
     "What the update changes: only Wine's own files inside the container are refreshed to the new version. DXVK, FEX/Box64 and anything a game installed are left as they are; Wine finishes its own prefix update on the next launch.\n\nWhat is kept: installed games, saves, shortcuts and container settings.\n\nThe old layer stays installed and a backup of the registry is taken first, so \"Revert layer\" is available from this container's menu afterwards.\n\nClose the game before updating.": "更新で変更される内容: コンテナ内の Wine 自身のファイルのみが新しいバージョンに更新されます。DXVK、FEX/Box64、ゲームがインストールしたファイルはそのまま残ります。Wine は次回起動時にプレフィックスの更新を完了します。\n\n保持される内容: インストール済みのゲーム、セーブデータ、ショートカット、コンテナ設定。\n\n古いレイヤーはインストールされたまま残り、最初にレジストリのバックアップが作成されるため、後からこのコンテナのメニューで「レイヤーを元に戻す」を使用できます。\n\n更新する前にゲームを終了してください。",
@@ -6809,6 +6815,42 @@
     {
       "regex": "^(\\d+)\\s+overridden$",
       "replace": "$1 件を上書き中"
+    },
+    {
+      "regex": "^\"(.+)\" moves from (.+) to (.+)\\.$",
+      "replace": "「$1」を $2 から $3 に更新します。"
+    },
+    {
+      "regex": "^The (.+?) layer is not on this device yet: it is downloaded from the catalog(.*?) and installed first, then the container is updated\\.$",
+      "replace": "$1 レイヤーはまだこの端末にインストールされていません。先にカタログからダウンロード$2・インストールしてから、コンテナを更新します。"
+    },
+    {
+      "regex": "^The (.+?) layer stays installed and a backup of the registry is taken, so you can revert from this menu\\. Make sure nothing is running in this container\\.$",
+      "replace": "$1 レイヤーは端末に残され、レジストリのバックアップも作成されるため、このメニューから元に戻すことができます。このコンテナ内で何も実行されていないことを確認してください。"
+    },
+    {
+      "regex": "^The (.+?) layer is no longer installed on this device, so this update cannot be reverted afterwards \\(a registry backup is still taken\\)\\. Make sure nothing is running in this container\\.$",
+      "replace": "$1 レイヤーはこの端末からすでに削除されているため、更新後に元へ戻すことはできません（レジストリのバックアップは作成されます）。このコンテナ内で何も実行されていないことを確認してください。"
+    },
+    {
+      "regex": "^A layer is the set of Wine/Proton files a container runs on\\. \"(.+)\" runs on (.+?); a newer (?:build|version) of the same layer, (.+?), is available in the catalog\\. The (.+?) layer will be downloaded(.*?) first\\.$",
+      "replace": "レイヤーとは、コンテナが動作する Wine/Proton ファイル一式のことです。「$1」は現在 $2 で動作しており、同じレイヤーの新しい版（$3）がカタログに公開されています。先に $4 レイヤーをダウンロード$5します。"
+    },
+    {
+      "regex": "^A layer is the set of Wine/Proton files a container runs on\\. \"(.+)\" runs on (.+?); a newer (?:build|version) of the same layer, (.+?), is installed\\.$",
+      "replace": "レイヤーとは、コンテナが動作する Wine/Proton ファイル一式のことです。「$1」は現在 $2 で動作しており、同じレイヤーの新しい版（$3）が端末にインストール済みです。"
+    },
+    {
+      "regex": "^A (.+?) snapshot from an earlier update exists — revert is available in the menu\\.$",
+      "replace": "以前の更新時に作成された $1 のスナップショットが残っています — メニューから元に戻せます。"
+    },
+    {
+      "regex": "^\"(.+)\" goes back from (.+) to (.+)\\.$",
+      "replace": "「$1」を $2 から $3 に戻します。"
+    },
+    {
+      "regex": "^The registry is restored from the backup taken before the update \\(registry changes made since then are discarded\\) and the builtin DLLs are refreshed from the (.+?) layer\\. Games, saves, shortcuts and container settings are kept\\. Requires the (.+?) layer to still be installed\\.$",
+      "replace": "更新前に取得したバックアップからレジストリを復元し（更新後に行ったレジストリ変更は破棄されます）、$1 レイヤーから内蔵 DLL を戻します。ゲーム、セーブデータ、ショートカット、コンテナ設定はそのまま保持されます。実行には $2 レイヤーが端末に残っている必要があります。"
     }
   ]
 }
