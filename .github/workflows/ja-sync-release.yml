@@ -587,6 +587,7 @@ jobs:
           SIZE=$(wc -c < "$APK_PATH")
           SHA256=$(sha256sum "$APK_PATH" | cut -d' ' -f1)
           APK_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/download/${TAG}/${APK_NAME}"
+          export SIZE SHA256 APK_URL
 
           gh api "repos/${UPSTREAM_REPO}/releases/tags/${TAG}" > upstream_rel.json || echo '{}' > upstream_rel.json
           python3 - <<'PYEOF'
