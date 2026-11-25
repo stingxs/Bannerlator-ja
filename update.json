@@ -1,7 +1,7 @@
 {
   "versionCode": 109,
   "versionName": "3.2.2",
-  "notes": "[日本語版] Bannerlator 3.2.2: faster upscalers (NIS -80 %), frame-gen engine switch in-game and per-game frame-gen settings, Wine / Proton list with family updates, Sync CPU topology and named core pickers, idle-thread throttle switches, Wayland desktop cursors, community control profiles, Xbox Cloud Gaming audio over HDMI/USB/Bluetooth, store fixes.",
+  "notes": "Bannerlator 3.2.2: faster upscalers (NIS -80 %), frame-gen engine switch in-game and per-game frame-gen settings, Wine / Proton list with family updates, Sync CPU topology and named core pickers, idle-thread throttle switches, Wayland desktop cursors, community control profiles, Xbox Cloud Gaming audio over HDMI/USB/Bluetooth, store fixes.",
   "highlights": [
     {
       "title": "Faster upscalers",
@@ -33,7 +33,7 @@
     "com.winlator.banner": "1ac7b10fc3d55c506a34e83e3964f7719eaa49edbfddf8d00b6b9850be76e7e6"
   },
   "apkUrl": {
-    "com.winlator.banner": "https://github.com/stingxs/Bannerlator/releases/download/3.2.2/Bannerlator-3.2.2-standard.apk"
+    "com.winlator.banner": "https://github.com/stingxs/Bannerlator-ja/releases/download/3.2.2/Bannerlator-3.2.2-standard.apk"
   },
   "apk": {
     "com.winlator.banner": "Bannerlator-3.2.2-standard.apk"
