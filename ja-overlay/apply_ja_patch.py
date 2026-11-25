@@ -168,6 +168,108 @@ def rewrite_compose_text_imports(target_root: Path):
     print(f"Rewrote Compose Text imports in {rewritten} Kotlin files")
 
 
+def find_matching_paren(text: str, open_idx: int) -> int:
+    """Find the closing ')' matching '(' at open_idx, skipping strings and comments."""
+    n = len(text)
+    i = open_idx + 1
+    depth = 1
+    while i < n and depth > 0:
+        c = text[i]
+        if text.startswith("//", i):
+            nl = text.find("\n", i)
+            i = n if nl == -1 else nl + 1
+            continue
+        if text.startswith("/*", i):
+            end = text.find("*/", i + 2)
+            i = n if end == -1 else end + 2
+            continue
+        if text.startswith('"""', i):
+            end = text.find('"""', i + 3)
+            i = n if end == -1 else end + 3
+            continue
+        if c == '"':
+            i += 1
+            while i < n:
+                if text[i] == "\\":
+                    i += 2
+                elif text[i] == '"':
+                    i += 1
+                    break
+                else:
+                    i += 1
+            continue
+        if c == "'":
+            i += 1
+            while i < n:
+                if text[i] == "\\":
+                    i += 2
+                elif text[i] == "'":
+                    i += 1
+                    break
+                else:
+                    i += 1
+            continue
+        if c == "(":
+            depth += 1
+        elif c == ")":
+            depth -= 1
+            if depth == 0:
+                return i
+        i += 1
+    return -1
+
+
+def rewrite_readonly_dropdown_fields(target_root: Path):
+    """Wrap `value = ...` in readOnly OutlinedTextField dropdown anchors with JaOverlay.tr(...)."""
+    base = target_root / "app/src/main/java/com/winlator/star"
+    patched_files = 0
+    patched_calls = 0
+
+    for p in sorted(base.rglob("*.kt")):
+        rel = str(p.relative_to(base)).replace("\\", "/")
+        if rel.startswith("ui/simple/") or rel.startswith("i18n/"):
+            continue
+        txt = p.read_text(encoding="utf-8")
+        if "OutlinedTextField(" not in txt or "readOnly" not in txt:
+            continue
+
+        out_parts = []
+        pos = 0
+        file_calls = 0
+        for m in re.finditer(r"(?<![A-Za-z0-9_.])OutlinedTextField\s*\(", txt):
+            start = m.start()
+            if start < pos:
+                continue
+            open_paren = m.end() - 1
+            close_paren = find_matching_paren(txt, open_paren)
+            if close_paren == -1:
+                continue
+            block = txt[start:close_paren + 1]
+            if not re.search(r"\breadOnly\s*=\s*true\b", block):
+                continue
+
+            new_block, count = re.subn(
+                r"^([ \t]*value\s*=\s*)(?!com\.winlator\.star\.i18n\.JaOverlay\.tr\()([^\r\n]+?)(,\s*(?://.*)?)$",
+                r"\1com.winlator.star.i18n.JaOverlay.tr(\2)\3",
+                block,
+                count=1,
+                flags=re.M,
+            )
+            if count > 0:
+                out_parts.append(txt[pos:start])
+                out_parts.append(new_block)
+                pos = close_paren + 1
+                file_calls += 1
+
+        if file_calls > 0:
+            out_parts.append(txt[pos:])
+            p.write_text("".join(out_parts), encoding="utf-8")
+            patched_files += 1
+            patched_calls += file_calls
+
+    print(f"Wrapped readOnly OutlinedTextField values in {patched_calls} call(s) across {patched_files} Kotlin files")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--target", default=".", help="Root of upstream Bannerlator checkout")
@@ -180,6 +282,7 @@ def main():
     patch_version_code(target_root, args.version_code_offset)
     install_resources_and_assets(target_root)
     rewrite_compose_text_imports(target_root)
+    rewrite_readonly_dropdown_fields(target_root)
     print("Japanese overlay applied successfully.")
 
 

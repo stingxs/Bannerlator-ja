@@ -143,6 +143,9 @@ object JaOverlay {
         }
         return translated
     }
+
+    @Composable
+    fun tr(raw: String): String = tr(LocalContext.current, raw)
 }
 
 @Composable

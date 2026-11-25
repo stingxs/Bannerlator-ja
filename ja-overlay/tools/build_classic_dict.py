@@ -112,6 +112,13 @@ DYNAMIC_PATTERNS = [
     {"regex": r"^(\d+)\s+games?$", "replace": "$1 本のゲーム"},
     {"regex": r"^(\d+)\s+containers?$", "replace": "$1 個のコンテナ"},
     {"regex": r"^(\d+)\s+profiles?$", "replace": "$1 個のプロファイル"},
+
+    # PlayerSlotsEditor & Shortcuts
+    {"regex": r"^Ignored\s*·\s*on-screen controls$", "replace": "無視 · オンスクリーンコントロール"},
+    {"regex": r"^Auto \(assigned by launch order\)\s*·\s*on-screen controls$", "replace": "Auto（起動順で割り当て） · オンスクリーンコントロール"},
+    {"regex": r"^Player (\d+)\s*·\s*on-screen controls$", "replace": "Player $1 · オンスクリーンコントロール"},
+    {"regex": r"^(.+?)\s*·\s*on-screen controls$", "replace": "$1 · オンスクリーンコントロール"},
+    {"regex": r"^(\d+)\s+overridden$", "replace": "$1 件を上書き中"},
 ]
 
 
@@ -126,7 +133,12 @@ def main():
         "DRIVES": "ドライブ",
         "WIN COMPONENTS": "Windows コンポーネント",
         "ADVANCED": "詳細設定",
-        "Auto": "自動",
+        "Custom (Pick services individually)": "カスタム（サービスを個別に選択）",
+        "Ignored": "無視",
+        "Auto (assigned by launch order)": "Auto（起動順で割り当て）",
+        "Global defaults": "グローバルデフォルト",
+        "-- Disabled --": "-- 無効 --",
+        "-- Default --": "-- デフォルト --",
         "• Sustained Performance Mode": "• 持続パフォーマンスモード",
         "• Thread Priority Boost": "• スレッド優先度ブースト",
         "• Prefer Big Cores": "• ビッグコアを優先",

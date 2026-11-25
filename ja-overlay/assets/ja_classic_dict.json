@@ -2793,6 +2793,11 @@
     "DRIVES": "ドライブ",
     "WIN COMPONENTS": "Windows コンポーネント",
     "ADVANCED": "詳細設定",
+    "Custom (Pick services individually)": "カスタム（サービスを個別に選択）",
+    "Auto (assigned by launch order)": "Auto（起動順で割り当て）",
+    "Global defaults": "グローバルデフォルト",
+    "-- Disabled --": "-- 無効 --",
+    "-- Default --": "-- デフォルト --",
     "• Sustained Performance Mode": "• 持続パフォーマンスモード",
     "• Thread Priority Boost": "• スレッド優先度ブースト",
     "• Prefer Big Cores": "• ビッグコアを優先",
@@ -3134,7 +3139,6 @@
     "Pin a controller (or the on-screen pad) to a player slot so the launch order is consistent. Applied on launch — the in-game side menu still lets you change it live.": "起動時の割り当て順が毎回同じになるよう、コントローラー(またはオンスクリーンパッド)をプレイヤースロットに固定します。起動時に適用され、ゲーム中のサイドメニューからいつでも変更できます。",
     "No controllers detected. Connect a controller to assign it, or set a pin here to apply when it's plugged in.": "コントローラーが検出されませんでした。割り当てるにはコントローラーを接続するか、接続時に適用される固定設定をここで指定してください。",
     "Ignore": "無視",
-    "Auto (assigned by launch order)": "自動 (起動順で割り当て)",
     "· on-screen controls": "· オンスクリーンコントロール",
     "Slot": "スロット",
     "Fewer stick updates": "スティック更新頻度を減らす",
@@ -3221,7 +3225,6 @@
     "Delete profile": "プロファイルを削除",
     "No log output yet.": "ログはまだ出力されていません。",
     "Log copied": "ログをコピーしました",
-    "-- Disabled --": "-- 無効 --",
     "Show Touchscreen Controls": "タッチスクリーンコントロールを表示",
     "Enable Timeout": "タイムアウトを有効にする",
     "Enable Haptics": "触覚フィードバックを有効にする",
@@ -3230,7 +3233,6 @@
     "Nothing here": "ここには何もありません",
     "C: drive": "C: ドライブ",
     "Game folder": "ゲームフォルダー",
-    "-- Default --": "-- デフォルト --",
     "Shaders": "シェーダー",
     "Add Profile": "プロファイルを追加",
     "Profile name": "プロファイル名",
@@ -4373,7 +4375,6 @@
     "Scroll to the end to continue.": "続行するには最後までスクロールしてください。",
     "I understand and accept all risk": "内容を理解し、すべてのリスクに同意します",
     "Global defaults apply to every game unless a game sets its own override (in the game's settings or from the in-game menu).": "グローバルデフォルトは、ゲーム固有の上書き設定（ゲーム設定またはゲーム内メニュー）がない限りすべてのゲームに適用されます。",
-    "Global defaults": "グローバルデフォルト",
     "Lock GPU to max clock needs an Adreno (Qualcomm) GPU, or root on other GPUs.": "GPU を最大クロックに固定するには、Adreno（Qualcomm）GPU、または他の GPU では root 権限が必要です。",
     "Root performance controls": "root パフォーマンスコントロール",
     "Root status:": "root 状態:",
@@ -6788,6 +6789,26 @@
     {
       "regex": "^(\\d+)\\s+profiles?$",
       "replace": "$1 個のプロファイル"
+    },
+    {
+      "regex": "^Ignored\\s*·\\s*on-screen controls$",
+      "replace": "無視 · オンスクリーンコントロール"
+    },
+    {
+      "regex": "^Auto \\(assigned by launch order\\)\\s*·\\s*on-screen controls$",
+      "replace": "Auto（起動順で割り当て） · オンスクリーンコントロール"
+    },
+    {
+      "regex": "^Player (\\d+)\\s*·\\s*on-screen controls$",
+      "replace": "Player $1 · オンスクリーンコントロール"
+    },
+    {
+      "regex": "^(.+?)\\s*·\\s*on-screen controls$",
+      "replace": "$1 · オンスクリーンコントロール"
+    },
+    {
+      "regex": "^(\\d+)\\s+overridden$",
+      "replace": "$1 件を上書き中"
     }
   ]
 }
