@@ -1,0 +1,42 @@
+{
+  "versionCode": 109,
+  "versionName": "3.2.2",
+  "notes": "[日本語版] Bannerlator 3.2.2: faster upscalers (NIS -80 %), frame-gen engine switch in-game and per-game frame-gen settings, Wine / Proton list with family updates, Sync CPU topology and named core pickers, idle-thread throttle switches, Wayland desktop cursors, community control profiles, Xbox Cloud Gaming audio over HDMI/USB/Bluetooth, store fixes.",
+  "highlights": [
+    {
+      "title": "Faster upscalers",
+      "text": "FSR, CAS and SGSR HQ + CAS about a third cheaper; NIS 80 % cheaper with the same picture."
+    },
+    {
+      "title": "Frame gen in-game",
+      "text": "Switch between Off, LSFG Native, Win-FG Native and WFG while the game runs; changes stay with that game."
+    },
+    {
+      "title": "Wine / Proton list",
+      "text": "Proton and Wine tabs, family groups, one row per layer, and updates inside each Proton family."
+    },
+    {
+      "title": "Cores",
+      "text": "Sync CPU topology, and core pickers, HUD and Task Manager that name each core."
+    },
+    {
+      "title": "Community profiles",
+      "text": "Winlator's original layouts and the layouts shared in our Discord."
+    }
+  ],
+  "publishedAt": "2026-11-25",
+  "minSupported": 1,
+  "size": {
+    "com.winlator.banner": 603531092
+  },
+  "apkSha256": {
+    "com.winlator.banner": "1ac7b10fc3d55c506a34e83e3964f7719eaa49edbfddf8d00b6b9850be76e7e6"
+  },
+  "apkUrl": {
+    "com.winlator.banner": "https://github.com/stingxs/Bannerlator/releases/download/3.2.2/Bannerlator-3.2.2-standard.apk"
+  },
+  "apk": {
+    "com.winlator.banner": "Bannerlator-3.2.2-standard.apk"
+  },
+  "patches": {}
+}
