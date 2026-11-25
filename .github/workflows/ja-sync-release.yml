@@ -606,7 +606,7 @@ jobs:
           rel = json.load(open("upstream_rel.json", encoding="utf-8"))
           body = rel.get("body") or ""
           m_sum = re.search(r"<!--\s*update-summary:\s*(.*?)\s*-->", body, re.S)
-          notes = m_sum.group(1).strip() if m_sum else f"Bannerlator {vn} (日本語版)"
+          notes = m_sum.group(1).strip() if m_sum else f"Bannerlator {vn} (ja)"
           highlights = []
           for m in re.finditer(r"<!--\s*update-highlight:\s*([^|]+)\|\s*(.*?)\s*-->", body):
               highlights.append({"title": m.group(1).strip(), "text": m.group(2).strip()})
@@ -614,7 +614,7 @@ jobs:
           update_obj = {
               "versionCode": vc,
               "versionName": vn,
-              "notes": f"[日本語版] {notes}",
+              "notes": f"[ja] {notes}",
               "highlights": highlights[:5],
               "publishedAt": pub,
               "minSupported": 1,
@@ -629,7 +629,7 @@ jobs:
 
           with open("release-notes.md", "w", encoding="utf-8") as f:
               f.write(
-                  f"# Bannerlator {tag} (日本語版 / standard)\n\n"
+                  f"# Bannerlator {tag} (ja / standard)\n\n"
                   f"- **ベース版**: [`{upstream_repo}` `{tag}`](https://github.com/{upstream_repo}/releases/tag/{tag})\n"
                   f"- **収録内容**: 公式 `standard` フレーバーに Classic UI・設定・XMB 等の日本語化オーバーレイを適用したビルドです。\n"
                   f"- **署名**: 公式と同一の `testkey` 署名のため、データを保持したまま上書きインストールできます。\n"
@@ -641,7 +641,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.check.outputs.tag }}
-          name: Bannerlator ${{ needs.check.outputs.tag }} (日本語版)
+          name: Bannerlator ${{ needs.check.outputs.tag }} (ja)
           body_path: release-notes.md
           files: |
             dist/${{ needs.build.outputs.apk_name }}
