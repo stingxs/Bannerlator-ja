@@ -634,6 +634,7 @@ jobs:
         with:
           tag_name: ${{ needs.check.outputs.tag }}
           name: Bannerlator ${{ needs.check.outputs.tag }} (ja)
+          body: Japanese localization for Classic UI.
           files: |
             dist/${{ needs.build.outputs.apk_name }}
             update.json
