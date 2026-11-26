@@ -130,6 +130,26 @@ DYNAMIC_PATTERNS = [
     {"regex": r"^A (.+?) snapshot from an earlier update exists — revert is available in the menu\.$", "replace": "以前の更新時に作成された $1 のスナップショットが残っています — メニューから元に戻せます。"},
     {"regex": r'^"(.+)" goes back from (.+) to (.+)\.$', "replace": "「$1」を $2 から $3 に戻します。"},
     {"regex": r"^The registry is restored from the backup taken before the update \(registry changes made since then are discarded\) and the builtin DLLs are refreshed from the (.+?) layer\. Games, saves, shortcuts and container settings are kept\. Requires the (.+?) layer to still be installed\.$", "replace": "更新前に取得したバックアップからレジストリを復元し（更新後に行ったレジストリ変更は破棄されます）、$1 レイヤーから内蔵 DLL を戻します。ゲーム、セーブデータ、ショートカット、コンテナ設定はそのまま保持されます。実行には $2 レイヤーが端末に残っている必要があります。"},
+
+    # EnvVarsEditor: Prefer game-folder DLLs
+    {"regex": r"^Loads the game's own copies of (.+?) instead of Wine's\. Needed by many wrappers and mod loaders\. Graphics DLLs are never included — DXVK/VKD3D own those\. A Microsoft xinput DLL in a game folder does not work under Wine \(it needs a Windows-only driver\); leave it off\.$", "replace": "Wine の代わりに、ゲームフォルダー内の $1 を優先して読み込みます。多くのラッパーや Mod ローダーで必要になります。グラフィックス用 DLL は含まれません（DXVK/VKD3D が管理します）。ゲームフォルダー内の Microsoft 製 xinput DLL は Wine 環境では動作しない（Windows 専用ドライバーが必要）ため、その場合はオフのままにしてください。"},
+
+    # SyncModeSelector: containerSyncHelper (esync / ntsync / wineserver + Greyed reasons)
+    {"regex": r"^Checking what (.+?) supports…$", "replace": "$1 の対応状況を確認中…"},
+    {"regex": r"^(.+?) isn't in (.+?) — switched back to (.+?) \(layer default\)\.$", "replace": "$1 は $2 に含まれていないため、$3（レイヤーのデフォルト）に戻しました。"},
+    {"regex": r"^esync — layer default\. Fast and well tested\.\s*·\s*Greyed:\s*Android blocks fsync\.$", "replace": "esync — レイヤーのデフォルト。高速で動作実績が豊富です。  ·  無効理由: Android は fsync をブロックしています。"},
+    {"regex": r"^esync — layer default\. Fast and well tested\.\s*·\s*Greyed:\s*Android blocks fsync;\s*ntsync isn't in (.+)\.$", "replace": "esync — レイヤーのデフォルト。高速で動作実績が豊富です。  ·  無効理由: Android は fsync をブロックしています / $1 は ntsync 非対応。"},
+    {"regex": r"^esync — layer default\. Fast and well tested\.\s*·\s*Greyed:\s*Android blocks fsync;\s*(.+)\.$", "replace": "esync — レイヤーのデフォルト。高速で動作実績が豊富です。  ·  無効理由: Android は fsync をブロック / $1。"},
+    {"regex": r"^esync — fast and well tested\.\s*·\s*Greyed:\s*Android blocks fsync\.$", "replace": "esync — 高速で動作実績が豊富です。  ·  無効理由: Android は fsync をブロックしています。"},
+    {"regex": r"^esync — fast and well tested\.\s*·\s*Greyed:\s*Android blocks fsync;\s*ntsync isn't in (.+)\.$", "replace": "esync — 高速で動作実績が豊富です。  ·  無効理由: Android は fsync をブロックしています / $1 は ntsync 非対応。"},
+    {"regex": r"^esync — fast and well tested\.\s*·\s*Greyed:\s*Android blocks fsync;\s*(.+)\.$", "replace": "esync — 高速で動作実績が豊富です。  ·  無効理由: Android は fsync をブロック / $1。"},
+    {"regex": r"^ntsync — closest to Windows\. New: try it per game\.\s*·\s*Greyed:\s*Android blocks fsync\.$", "replace": "ntsync — Windows に最も近い同期方式。新規機能のためゲームごとに試してみてください。  ·  無効理由: Android は fsync をブロックしています。"},
+    {"regex": r"^ntsync — closest to Windows\. New: try it per game\.\s*·\s*Greyed:\s*Android blocks fsync;\s*(.+)\.$", "replace": "ntsync — Windows に最も近い同期方式。新規機能のためゲームごとに試してみてください。  ·  無効理由: Android は fsync をブロック / $1。"},
+    {"regex": r"^wineserver — slowest, most compatible\. For games that misbehave\.\s*·\s*Greyed:\s*Android blocks fsync\.$", "replace": "wineserver — 最も低速ですが互換性が最高です。動作が不安定なゲーム向けです。  ·  無効理由: Android は fsync をブロックしています。"},
+    {"regex": r"^wineserver — slowest, most compatible\. For games that misbehave\.\s*·\s*Greyed:\s*Android blocks fsync;\s*ntsync isn't in (.+)\.$", "replace": "wineserver — 最も低速ですが互換性が最高です。動作が不安定なゲーム向けです。  ·  無効理由: Android は fsync をブロックしています / $1 は ntsync 非対応。"},
+    {"regex": r"^wineserver — slowest, most compatible\. For games that misbehave\.\s*·\s*Greyed:\s*Android blocks fsync;\s*esync isn't in (.+)\.$", "replace": "wineserver — 最も低速ですが互換性が最高です。動作が不安定なゲーム向けです。  ·  無効理由: Android は fsync をブロックしています / $1 は esync 非対応。"},
+    {"regex": r"^wineserver — slowest, most compatible\. For games that misbehave\.\s*·\s*Greyed:\s*Android blocks fsync;\s*ntsync isn't in (.+?);\s*esync isn't in (.+)\.$", "replace": "wineserver — 最も低速ですが互換性が最高です。動作が不安定なゲーム向けです。  ·  無効理由: Android は fsync をブロック / $1 は ntsync・esync 非対応。"},
+    {"regex": r"^wineserver — slowest, most compatible\. For games that misbehave\.\s*·\s*Greyed:\s*Android blocks fsync;\s*(.+)\.$", "replace": "wineserver — 最も低速ですが互換性が最高です。動作が不安定なゲーム向けです。  ·  無効理由: Android は fsync をブロック / $1。"},
 ]
 
 
@@ -157,6 +177,17 @@ def main():
         "What is kept: installed games, saves, shortcuts and container settings.": "保持される内容: インストール済みのゲーム、セーブデータ、ショートカット、コンテナ設定。",
         "The old layer stays installed and a backup of the registry is taken first, so \"Revert layer\" is available from this container's menu afterwards.": "古いレイヤーは端末に残され、更新前にレジストリのバックアップも作成されるため、更新後もこのコンテナのメニューから「レイヤーを戻す」を実行できます。",
         "Close the game before updating.": "更新する前にゲームを終了してください。",
+        "DirectX 12 fix: For Unreal Engine games run with -dx12 whose HDR option stays greyed out. Safe.": "DirectX 12 fix: -dx12 で起動した Unreal Engine ゲームで HDR オプションがグレーアウトしている場合の修正です。安全に使用できます。",
+        "DirectX 11: Experimental. Swaps in dxvk-nvapi for Unreal Engine DirectX 11 games. Pick an NVIDIA GPU in the graphics driver configuration. Turn it off if a game misbehaves. Needs DXVK 2.6 or newer; with an NVIDIA GPU showing, some games also try DLSS or Reflex, which dxvk-nvapi reports as unavailable.": "DirectX 11: 実験的機能です。Unreal Engine の DirectX 11 ゲーム向けに dxvk-nvapi を組み込みます。グラフィックスドライバー設定で NVIDIA GPU を選択してください。動作が不安定な場合はオフにしてください。DXVK 2.6 以降が必要です（NVIDIA GPU を偽装すると一部ゲームが DLSS や Reflex を試行しますが、dxvk-nvapi は非対応として応答します）。",
+        "DirectX 11: Experimental. Swaps in dxvk-nvapi for Unreal Engine DirectX 11 games. Pick an NVIDIA GPU in the Wayland driver settings. Turn it off if a game misbehaves. Needs DXVK 2.6 or newer; with an NVIDIA GPU showing, some games also try DLSS or Reflex, which dxvk-nvapi reports as unavailable.": "DirectX 11: 実験的機能です。Unreal Engine の DirectX 11 ゲーム向けに dxvk-nvapi を組み込みます。Wayland ドライバー設定で NVIDIA GPU を選択してください。動作が不安定な場合はオフにしてください。DXVK 2.6 以降が必要です（NVIDIA GPU を偽装すると一部ゲームが DLSS や Reflex を試行しますが、dxvk-nvapi は非対応として応答します）。",
+        "HDR output itself needs the Wayland backend, and HDR switched on in the game. Applies from the next launch.": "実際の HDR 出力には Wayland バックエンドと、ゲーム内での HDR 有効化が必要です。次回起動時から反映されます。",
+        "Both need HDR output on as well, and HDR switched on in the game. Applies from the next launch.": "いずれも HDR 出力の有効化と、ゲーム内での HDR 有効化が必要です。次回起動時から反映されます。",
+        "No NVIDIA GPU is being reported, and Unreal Engine only takes its NVAPI path on one: pick an NVIDIA GPU under GPU name in the graphics driver configuration (the gear). NVIDIA GeForce GTX 1080 matches the generation dxvk-nvapi reports. Optional.": "NVIDIA GPU が認識されていないため、Unreal Engine は NVAPI 経路を使用しません。グラフィックスドライバー設定（歯車アイコン）の GPU 名で NVIDIA GPU を選択してください（NVIDIA GeForce GTX 1080 が dxvk-nvapi の報告世代と一致します・任意）。",
+        "No NVIDIA GPU is being reported, and Unreal Engine only takes its NVAPI path on one: pick an NVIDIA GPU under GPU name in the Wayland driver settings (the gear next to Wayland game driver). NVIDIA GeForce GTX 1080 matches the generation dxvk-nvapi reports. Optional.": "NVIDIA GPU が認識されていないため、Unreal Engine は NVAPI 経路を使用しません。Wayland ドライバー設定（Wayland ゲームドライバー横の歯車アイコン）の GPU 名で NVIDIA GPU を選択してください（NVIDIA GeForce GTX 1080 が dxvk-nvapi の報告世代と一致します・任意）。",
+        "esync — layer default. Fast and well tested.": "esync — レイヤーのデフォルト。高速で動作実績が豊富です。",
+        "esync — fast and well tested.": "esync — 高速で動作実績が豊富です。",
+        "ntsync — closest to Windows. New: try it per game.": "ntsync — Windows に最も近い同期方式。新規機能のためゲームごとに試してみてください。",
+        "wineserver — slowest, most compatible. For games that misbehave.": "wineserver — 最も低速ですが互換性が最高です。動作が不安定なゲーム向けです。",
         "• Sustained Performance Mode": "• 持続パフォーマンスモード",
         "• Thread Priority Boost": "• スレッド優先度ブースト",
         "• Prefer Big Cores": "• ビッグコアを優先",

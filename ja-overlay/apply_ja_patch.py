@@ -168,106 +168,132 @@ def rewrite_compose_text_imports(target_root: Path):
     print(f"Rewrote Compose Text imports in {rewritten} Kotlin files")
 
 
-def find_matching_paren(text: str, open_idx: int) -> int:
-    """Find the closing ')' matching '(' at open_idx, skipping strings and comments."""
-    n = len(text)
-    i = open_idx + 1
-    depth = 1
-    while i < n and depth > 0:
-        c = text[i]
-        if text.startswith("//", i):
-            nl = text.find("\n", i)
-            i = n if nl == -1 else nl + 1
-            continue
-        if text.startswith("/*", i):
-            end = text.find("*/", i + 2)
-            i = n if end == -1 else end + 2
-            continue
-        if text.startswith('"""', i):
-            end = text.find('"""', i + 3)
-            i = n if end == -1 else end + 3
-            continue
-        if c == '"':
-            i += 1
-            while i < n:
-                if text[i] == "\\":
-                    i += 2
-                elif text[i] == '"':
-                    i += 1
-                    break
-                else:
-                    i += 1
-            continue
-        if c == "'":
-            i += 1
-            while i < n:
-                if text[i] == "\\":
-                    i += 2
-                elif text[i] == "'":
-                    i += 1
-                    break
-                else:
-                    i += 1
-            continue
-        if c == "(":
-            depth += 1
-        elif c == ")":
-            depth -= 1
-            if depth == 0:
-                return i
-        i += 1
-    return -1
+def replace_exact_once(path: Path, old: str, new: str, label: str):
+    txt = path.read_text(encoding="utf-8")
+    if old not in txt:
+        raise RuntimeError(f"keep_raw_ui_values target not found in {path.name}: {label}")
+    path.write_text(txt.replace(old, new, 1), encoding="utf-8")
 
 
-def rewrite_readonly_dropdown_fields(target_root: Path):
-    """Wrap `value = ...` in readOnly OutlinedTextField dropdown anchors with JaOverlay.tr(...)."""
+def keep_raw_ui_values(target_root: Path):
+    """Keep dropdown option texts and file/folder names untranslated (use material3.Text directly)."""
     base = target_root / "app/src/main/java/com/winlator/star"
-    patched_files = 0
-    patched_calls = 0
 
-    for p in sorted(base.rglob("*.kt")):
-        rel = str(p.relative_to(base)).replace("\\", "/")
-        if rel.startswith("ui/simple/") or rel.startswith("i18n/"):
-            continue
-        txt = p.read_text(encoding="utf-8")
-        if "OutlinedTextField(" not in txt or "readOnly" not in txt:
-            continue
+    # 1) Dropdown choice items (keep field labels/headings translated; keep option values raw English)
+    cds = base / "ui/screens/ContainerDetailScreen.kt"
+    cds_txt = cds.read_text(encoding="utf-8")
+    cds_new, cds_cnt = re.subn(
+        r"DropdownMenuItem\(\s*text = \{ Text\(opt\) \}",
+        "DropdownMenuItem(\n                    text = { androidx.compose.material3.Text(opt) }",
+        cds_txt,
+    )
+    if cds_cnt < 2:
+        # Handle single-line or multi-line formatting safely
+        cds_new, cds_cnt = re.subn(
+            r"text = \{ Text\(opt\) \}",
+            "text = { androidx.compose.material3.Text(opt) }",
+            cds_txt,
+        )
+    if cds_cnt == 0:
+        raise RuntimeError("No DropdownMenuItem Text(opt) found in ContainerDetailScreen.kt")
+    cds.write_text(cds_new, encoding="utf-8")
 
-        out_parts = []
-        pos = 0
-        file_calls = 0
-        for m in re.finditer(r"(?<![A-Za-z0-9_.])OutlinedTextField\s*\(", txt):
-            start = m.start()
-            if start < pos:
-                continue
-            open_paren = m.end() - 1
-            close_paren = find_matching_paren(txt, open_paren)
-            if close_paren == -1:
-                continue
-            block = txt[start:close_paren + 1]
-            if not re.search(r"\breadOnly\s*=\s*true\b", block):
-                continue
+    replace_exact_once(
+        base / "ui/components/PlayerSlotsEditor.kt",
+        "DropdownMenuItem(text = { Text(label) }, onClick = {",
+        "DropdownMenuItem(text = { androidx.compose.material3.Text(label) }, onClick = {",
+        "PlayerSlotsEditor DropdownMenuItem",
+    )
+    replace_exact_once(
+        base / "ControlsEditorSettingsPane.kt",
+        "DropdownMenuItem(\n                        text = {\n                            Text(\n                                text = option,",
+        "DropdownMenuItem(\n                        text = {\n                            androidx.compose.material3.Text(\n                                text = option,",
+        "ControlsEditorSettingsPane SettingSpinner",
+    )
+    replace_exact_once(
+        base / "ui/dialogs/InputControlsDialog.kt",
+        "DropdownMenuItem(\n                                text = { Text(label) },",
+        "DropdownMenuItem(\n                                text = { androidx.compose.material3.Text(label) },",
+        "InputControlsDialog DropdownMenuItem",
+    )
+    replace_exact_once(
+        base / "ui/dialogs/ScreenEffectsDialog.kt",
+        "DropdownMenuItem(\n                                text = { Text(label) },",
+        "DropdownMenuItem(\n                                text = { androidx.compose.material3.Text(label) },",
+        "ScreenEffectsDialog DropdownMenuItem",
+    )
 
-            new_block, count = re.subn(
-                r"^([ \t]*value\s*=\s*)(?!com\.winlator\.star\.i18n\.JaOverlay\.tr\()([^\r\n]+?)(,\s*(?://.*)?)$",
-                r"\1com.winlator.star.i18n.JaOverlay.tr(\2)\3",
-                block,
-                count=1,
-                flags=re.M,
-            )
-            if count > 0:
-                out_parts.append(txt[pos:start])
-                out_parts.append(new_block)
-                pos = close_paren + 1
-                file_calls += 1
+    saves = base / "ui/screens/SavesScreen.kt"
+    saves_txt = saves.read_text(encoding="utf-8")
+    saves_new, saves_cnt = re.subn(
+        r"text = \{ Text\(c\.getName\(\)\) \}",
+        "text = { androidx.compose.material3.Text(c.getName()) }",
+        saves_txt,
+    )
+    if saves_cnt == 0:
+        raise RuntimeError("No Text(c.getName()) found in SavesScreen.kt")
+    saves.write_text(saves_new, encoding="utf-8")
 
-        if file_calls > 0:
-            out_parts.append(txt[pos:])
-            p.write_text("".join(out_parts), encoding="utf-8")
-            patched_files += 1
-            patched_calls += file_calls
+    # Box64 / FEXCore preset pickers in SettingsScreen.kt
+    ss = base / "ui/screens/SettingsScreen.kt"
+    ss_txt = ss.read_text(encoding="utf-8")
+    ss_txt, ss_preset_cnt = re.subn(
+        r"text = \{ Text\(preset\.name\) \}",
+        "text = { androidx.compose.material3.Text(preset.name) }",
+        ss_txt,
+    )
+    ss_txt, ss_btn_cnt = re.subn(
+        r"Text\(label, color = MaterialTheme\.colorScheme\.onSurface\)",
+        "androidx.compose.material3.Text(label, color = MaterialTheme.colorScheme.onSurface)",
+        ss_txt,
+    )
+    if ss_preset_cnt == 0 or ss_btn_cnt == 0:
+        raise RuntimeError("Preset picker Text targets not found in SettingsScreen.kt")
+    ss.write_text(ss_txt, encoding="utf-8")
 
-    print(f"Wrapped readOnly OutlinedTextField values in {patched_calls} call(s) across {patched_files} Kotlin files")
+    # 2) File browser / picker real directory and file names (keep "ホーム > 内部" crumbs, keep folder names raw)
+    fm_ui = base / "ui/files/FmUi.kt"
+    replace_exact_once(
+        fm_ui,
+        "            Column(Modifier.weight(1f)) {\n                Text(\n                    item.name,",
+        "            Column(Modifier.weight(1f)) {\n                androidx.compose.material3.Text(\n                    item.name,",
+        "FmUi FmRow item.name",
+    )
+    replace_exact_once(
+        fm_ui,
+        "            Spacer(Modifier.height(if (dense) 3.dp else 6.dp))\n            Text(\n                item.name,",
+        "            Spacer(Modifier.height(if (dense) 3.dp else 6.dp))\n            androidx.compose.material3.Text(\n                item.name,",
+        "FmUi FmTile item.name",
+    )
+    replace_exact_once(
+        fm_ui,
+        "        segments.forEachIndexed { i, (label, go) ->\n            val last = i == segments.lastIndex\n            Text(\n                label,",
+        "        segments.forEachIndexed { i, (label, go) ->\n            val last = i == segments.lastIndex\n            if (i <= 1) Text(\n                label,\n                color = if (last) cs.onSurface else cs.primary,\n                fontSize = if (dense) 12.sp else 13.sp,\n                fontWeight = if (last) FontWeight.SemiBold else FontWeight.Medium,\n                maxLines = 1,\n                modifier = Modifier\n                    .clip(RoundedCornerShape(8.dp))\n                    .clickable(enabled = !last, onClick = go)\n                    .padding(horizontal = 6.dp, vertical = vPad),\n            ) else androidx.compose.material3.Text(\n                label,",
+        "FmUi FmCrumbs folder names",
+    )
+    replace_exact_once(
+        base / "ui/files/FmDialogs.kt",
+        "title = { Text(file.name.ifBlank { file.absolutePath }, maxLines = 2, overflow = TextOverflow.Ellipsis) },",
+        "title = { androidx.compose.material3.Text(file.name.ifBlank { file.absolutePath }, maxLines = 2, overflow = TextOverflow.Ellipsis) },",
+        "FmDialogs title",
+    )
+    replace_exact_once(
+        base / "ui/files/FmNetDialogs.kt",
+        "title = { Text(item.name, maxLines = 2, overflow = TextOverflow.Ellipsis) },",
+        "title = { androidx.compose.material3.Text(item.name, maxLines = 2, overflow = TextOverflow.Ellipsis) },",
+        "FmNetDialogs title",
+    )
+    replace_exact_once(
+        base / "ui/files/TextEditorScreen.kt",
+        "text = { Text(file.name) }",
+        "text = { androidx.compose.material3.Text(file.name) }",
+        "TextEditorScreen title",
+    )
+
+    print(
+        f"Kept raw UI values: ContainerDetail={cds_cnt}, Saves={saves_cnt}, "
+        f"SettingsPresets={ss_preset_cnt}+{ss_btn_cnt}, plus PlayerSlots/Controls/Dialogs/Files"
+    )
 
 
 def main():
@@ -282,7 +308,7 @@ def main():
     patch_version_code(target_root, args.version_code_offset)
     install_resources_and_assets(target_root)
     rewrite_compose_text_imports(target_root)
-    rewrite_readonly_dropdown_fields(target_root)
+    keep_raw_ui_values(target_root)
     print("Japanese overlay applied successfully.")
 
 
