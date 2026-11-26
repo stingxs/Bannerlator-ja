@@ -331,6 +331,167 @@ def keep_raw_ui_values(target_root: Path):
     )
 
 
+def install_language_switcher(target_root: Path):
+    """Add in-app UI language selector (Auto / English / 日本語) and Android 13+ localeConfig."""
+    # 1) Android 13+ per-app language config
+    locales_src = OVERLAY_DIR / "res/xml/locales_config.xml"
+    if not locales_src.exists():
+        raise FileNotFoundError(f"Missing locales_config.xml: {locales_src}")
+    locales_dst = target_root / "app/src/main/res/xml/locales_config.xml"
+    locales_dst.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(locales_src, locales_dst)
+
+    manifest = target_root / "app/src/main/AndroidManifest.xml"
+    mtxt = manifest.read_text(encoding="utf-8")
+    if "android:localeConfig" not in mtxt:
+        target_attr = 'android:supportsRtl="true"'
+        if target_attr not in mtxt:
+            raise RuntimeError("Could not find android:supportsRtl in AndroidManifest.xml")
+        mtxt = mtxt.replace(
+            target_attr,
+            'android:supportsRtl="true"\n        android:localeConfig="@xml/locales_config"',
+            1,
+        )
+        manifest.write_text(mtxt, encoding="utf-8")
+
+    # 2) BannerlatorApp: initialize JaOverlay locale before LabLang.init(this)
+    app_kt = target_root / "app/src/main/java/com/winlator/star/BannerlatorApp.kt"
+    atxt = app_kt.read_text(encoding="utf-8")
+    if "JaOverlay.init(this)" not in atxt:
+        lab_init = "com.winlator.star.ui.simple.LabLang.init(this)"
+        if lab_init not in atxt:
+            raise RuntimeError("Could not find LabLang.init(this) in BannerlatorApp.kt")
+        atxt = atxt.replace(
+            lab_init,
+            "com.winlator.star.i18n.JaOverlay.init(this)\n        " + lab_init,
+            1,
+        )
+        app_kt.write_text(atxt, encoding="utf-8")
+
+    # 3) Direct Activity subclasses: apply saved UI locale in attachBaseContext + applyOverrideConfiguration
+    base = target_root / "app/src/main/java/com/winlator/star"
+    kt_pat = re.compile(
+        r"^(\s*(?:(?:public|internal|open)\s+)?class\s+\w+\s*:\s*(?:AppCompatActivity|ComponentActivity|Activity)\(\)[^{]*\{)",
+        re.M,
+    )
+    java_pat = re.compile(
+        r"^(\s*(?:public\s+)?class\s+\w+\s+extends\s+(?:AppCompatActivity|ComponentActivity|Activity)\b[^{]*\{)",
+        re.M,
+    )
+    kt_inject = (
+        "\n    override fun attachBaseContext(newBase: android.content.Context) {\n"
+        "        super.attachBaseContext(com.winlator.star.i18n.JaOverlay.wrapContext(newBase))\n"
+        "    }\n\n"
+        "    override fun applyOverrideConfiguration(overrideConfiguration: android.content.res.Configuration?) {\n"
+        "        if (overrideConfiguration != null) {\n"
+        "            com.winlator.star.i18n.JaOverlay.applyLocaleToConfig(overrideConfiguration)\n"
+        "        }\n"
+        "        super.applyOverrideConfiguration(overrideConfiguration)\n"
+        "    }"
+    )
+    java_inject = (
+        "\n    @Override\n"
+        "    protected void attachBaseContext(android.content.Context newBase) {\n"
+        "        super.attachBaseContext(com.winlator.star.i18n.JaOverlay.wrapContext(newBase));\n"
+        "    }\n\n"
+        "    @Override\n"
+        "    public void applyOverrideConfiguration(android.content.res.Configuration overrideConfiguration) {\n"
+        "        if (overrideConfiguration != null) {\n"
+        "            com.winlator.star.i18n.JaOverlay.applyLocaleToConfig(overrideConfiguration);\n"
+        "        }\n"
+        "        super.applyOverrideConfiguration(overrideConfiguration);\n"
+        "    }"
+    )
+    kt_patched = 0
+    java_patched = 0
+    for p in sorted(base.rglob("*")):
+        if p.suffix not in (".kt", ".java") or not p.is_file():
+            continue
+        txt = p.read_text(encoding="utf-8", errors="ignore")
+        if "attachBaseContext" in txt:
+            continue
+        if p.suffix == ".kt":
+            new_txt, n = kt_pat.subn(lambda m: m.group(1) + kt_inject, txt, count=1)
+            if n:
+                p.write_text(new_txt, encoding="utf-8")
+                kt_patched += 1
+        else:
+            new_txt, n = java_pat.subn(lambda m: m.group(1) + java_inject, txt, count=1)
+            if n:
+                p.write_text(new_txt, encoding="utf-8")
+                java_patched += 1
+
+    if kt_patched < 30 or java_patched < 5:
+        raise RuntimeError(f"Unexpected Activity patch counts: kt={kt_patched}, java={java_patched}")
+
+    # 4) Classic AppearanceScreen.kt: add UI Language switcher
+    appearance = base / "ui/screens/AppearanceScreen.kt"
+    ap_txt = appearance.read_text(encoding="utf-8")
+    ap_anchor = (
+        "        Spacer(Modifier.height(4.dp))\n"
+        "        Box(Modifier.fillMaxWidth().height(1.dp).background(Divider))\n\n"
+        "        // ── Preset themes"
+    )
+    if ap_anchor not in ap_txt:
+        raise RuntimeError("Could not find Theme Presets anchor in AppearanceScreen.kt")
+    ui_lang_section = """        Spacer(Modifier.height(4.dp))
+        Box(Modifier.fillMaxWidth().height(1.dp).background(Divider))
+
+        // ── UI Language ──────────────────────────────────────────────────
+        SectionLabel("UI Language")
+        Text(
+            text = "Choose the display language for the UI. Auto follows your device language. Changing this restarts Bannerlator.",
+            color = OnSurfaceVariant,
+            fontSize = 12.sp,
+        )
+        Spacer(Modifier.height(6.dp))
+        val langOptions = listOf("" to "Auto", "en" to "English", "ja" to "日本語")
+        val currentLangTag = remember { com.winlator.star.i18n.JaOverlay.getLanguageTag(context) }
+        val selectedLangIdx = langOptions.indexOfFirst { (tag, _) ->
+            if (tag.isEmpty()) currentLangTag.isEmpty()
+            else currentLangTag.equals(tag, ignoreCase = true) || currentLangTag.startsWith("$tag-", ignoreCase = true)
+        }.let { if (it >= 0) it else 0 }
+        var pendingLangTag by remember { mutableStateOf<String?>(null) }
+        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+            langOptions.forEachIndexed { index, (tag, label) ->
+                SegmentedButton(
+                    selected = selectedLangIdx == index,
+                    onClick = {
+                        if (selectedLangIdx != index) pendingLangTag = tag
+                    },
+                    shape = SegmentedButtonDefaults.itemShape(index, langOptions.size),
+                ) { androidx.compose.material3.Text(label) }
+            }
+        }
+        pendingLangTag?.let { newTag ->
+            androidx.compose.material3.AlertDialog(
+                onDismissRequest = { pendingLangTag = null },
+                title = { Text("Switch UI language?") },
+                text = { Text("Bannerlator restarts to switch the language.") },
+                confirmButton = {
+                    androidx.compose.material3.TextButton(onClick = {
+                        pendingLangTag = null
+                        com.winlator.star.i18n.JaOverlay.findActivity(context)?.let { act ->
+                            com.winlator.star.i18n.JaOverlay.setAppLanguage(act, newTag)
+                        }
+                    }) { Text("Restart") }
+                },
+                dismissButton = {
+                    androidx.compose.material3.TextButton(onClick = { pendingLangTag = null }) {
+                        Text("Cancel")
+                    }
+                },
+            )
+        }
+
+        Spacer(Modifier.height(4.dp))
+        Box(Modifier.fillMaxWidth().height(1.dp).background(Divider))
+
+        // ── Preset themes"""
+    appearance.write_text(ap_txt.replace(ap_anchor, ui_lang_section, 1), encoding="utf-8")
+    print(f"Installed UI language switcher (Activities patched: kt={kt_patched}, java={java_patched})")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--target", default=".", help="Root of upstream Bannerlator checkout")
@@ -344,6 +505,7 @@ def main():
     install_resources_and_assets(target_root)
     rewrite_compose_text_imports(target_root)
     keep_raw_ui_values(target_root)
+    install_language_switcher(target_root)
     print("Japanese overlay applied successfully.")
 
 

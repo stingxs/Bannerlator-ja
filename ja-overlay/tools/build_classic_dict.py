@@ -198,6 +198,11 @@ def main():
         "• Disable thermal throttling": "• サーマルスロットリングを無効化",
         "• Fan to maximum": "• ファンを最大回転に設定",
         "• Free memory": "• メモリ解放",
+        "UI Language": "UI 言語",
+        "Choose the display language for the UI. Auto follows your device language. Changing this restarts Bannerlator.": "UI の表示言語を選択します。Auto は端末の言語設定に従います。変更すると Bannerlator が再起動します。",
+        "Switch UI language?": "UI の言語を切り替えますか？",
+        "Bannerlator restarts to switch the language.": "言語を切り替えるため Bannerlator を再起動します。",
+        "Restart": "再起動",
     }
     exact.update(curated)
 

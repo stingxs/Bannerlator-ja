@@ -1,6 +1,10 @@
 package com.winlator.star.i18n
 
+import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
+import android.content.res.Configuration
+import android.os.LocaleList
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.Composable
@@ -17,11 +21,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
+import androidx.preference.PreferenceManager
 import org.json.JSONObject
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 
 object JaOverlay {
+    const val PREF_LANGUAGE = "lab_language"
+
     private data class PatternRule(val regex: Regex, val replace: String)
     private data class Dict(
         val exact: Map<String, String>,
@@ -30,14 +37,92 @@ object JaOverlay {
 
     @Volatile
     private var cachedDict: Dict? = null
+    @Volatile
+    private var cachedLangTag: String? = null
     private val cache = ConcurrentHashMap<String, String>()
 
+    private fun localeForTag(tag: String): Locale? = when {
+        tag.isEmpty() -> null
+        tag.equals("ja", ignoreCase = true) || tag.startsWith("ja-", ignoreCase = true) -> Locale.JAPANESE
+        tag.equals("en", ignoreCase = true) || tag.startsWith("en-", ignoreCase = true) -> Locale.ENGLISH
+        else -> Locale.forLanguageTag(tag)
+    }
+
+    @JvmStatic
+    fun getLanguageTag(context: Context): String {
+        cachedLangTag?.let { return it }
+        val tag = runCatching {
+            PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(PREF_LANGUAGE, "")
+                ?.trim()
+                ?: ""
+        }.getOrDefault("")
+        cachedLangTag = tag
+        return tag
+    }
+
+    @JvmStatic
+    fun init(context: Context) {
+        cachedLangTag = null
+        val tag = getLanguageTag(context)
+        val target = localeForTag(tag) ?: return
+        val res = context.resources
+        val conf = Configuration(res.configuration)
+        conf.setLocale(target)
+        conf.setLocales(LocaleList(target))
+        @Suppress("DEPRECATION")
+        res.updateConfiguration(conf, res.displayMetrics)
+    }
+
+    @JvmStatic
+    fun wrapContext(base: Context): Context {
+        val tag = getLanguageTag(base)
+        val target = localeForTag(tag) ?: return base
+        val conf = Configuration(base.resources.configuration)
+        conf.setLocale(target)
+        conf.setLocales(LocaleList(target))
+        return base.createConfigurationContext(conf)
+    }
+
+    @JvmStatic
+    fun applyLocaleToConfig(config: Configuration) {
+        val tag = cachedLangTag ?: ""
+        val target = localeForTag(tag) ?: return
+        config.setLocale(target)
+        config.setLocales(LocaleList(target))
+    }
+
+    @JvmStatic
+    fun findActivity(context: Context): Activity? {
+        var ctx: Context? = context
+        while (ctx is ContextWrapper) {
+            if (ctx is Activity) return ctx
+            ctx = ctx.baseContext
+        }
+        return null
+    }
+
+    @JvmStatic
+    fun setAppLanguage(activity: Activity, tag: String) {
+        val normalized = tag.trim()
+        cachedLangTag = normalized
+        cache.clear()
+        PreferenceManager.getDefaultSharedPreferences(activity)
+            .edit()
+            .putString(PREF_LANGUAGE, normalized)
+            .commit()
+        com.winlator.star.ui.simple.LabLang.set(activity, normalized)
+    }
+
     private fun isJapanese(context: Context): Boolean {
+        val tag = getLanguageTag(context)
+        if (tag.isNotEmpty()) {
+            return tag.equals("ja", ignoreCase = true) || tag.startsWith("ja-", ignoreCase = true)
+        }
         val appLocale = context.resources.configuration.locales.let {
             if (it.isEmpty) Locale.getDefault() else it[0]
         }
-        return appLocale.language.equals("ja", ignoreCase = true) ||
-            Locale.getDefault().language.equals("ja", ignoreCase = true)
+        return appLocale.language.equals("ja", ignoreCase = true)
     }
 
     private fun dict(context: Context): Dict {
