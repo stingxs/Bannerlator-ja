@@ -22,7 +22,7 @@ FORBIDDEN_EXACT_KEYS = {
     "yserver", "Steam", "Epic", "GOG", "Amazon", "Xbox", "Gamescope", "MangoHud",
     "WineD3D", "CNC DDraw", "Mesa", "Adreno", "Mali", "PanVK", "C:", "D:", "Z:",
     "1.0", "1.1", "1.2", "1.3", "1.4", "2.0", "2.1", "3.0", "3.1", "4.0",
-    "Auto",
+    "Auto", "LSFG Native", "Win-FG Native", "LSFG-VK", "WFG",
 }
 
 # Dynamic UI patterns (Kotlin $interpolation rendered through Text(...))
