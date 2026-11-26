@@ -9,6 +9,37 @@ from pathlib import Path
 
 OVERLAY_DIR = Path(__file__).resolve().parent
 
+# Dropdown option values & preset names kept in English (labels/headings and help text stay Japanese)
+KEEP_ENGLISH_OPTION_STRINGS = {
+    # Box64 / FEXCore presets (16)
+    "stability", "compatibility", "intermediate", "performance", "performance_tso",
+    "performance_mali", "extreme", "extreme_2", "fex_extreme_wn", "fex_extreme_tso_wn",
+    "fex_extreme_gn", "fex_performance_x87_full", "fex_unreal_engine_3", "unity",
+    "unity_mono_bleeding_edge", "denuvo",
+    # Rumble target & motors (8)
+    "vibration_mode_off", "vibration_mode_controller", "vibration_mode_device", "vibration_mode_both",
+    "rumble_motors_both", "rumble_motors_single", "rumble_motors_both_short", "rumble_motors_single_short",
+    # Gyro options (12)
+    "gyro_mode_rate", "gyro_mode_orientation", "gyro_target_right_stick", "gyro_target_left_stick",
+    "gyro_target_mouse", "gyro_activator_l1", "gyro_activator_l2", "gyro_activator_r1",
+    "gyro_activator_r3", "gyro_activator_always", "gyro_activation_hold", "gyro_activation_toggle",
+    # Fullscreen & alignment options (17)
+    "fullscreen_mode_off", "fullscreen_mode_fit", "fullscreen_mode_stretch", "fullscreen_mode_fill",
+    "fullscreen_mode_integer", "fullscreen_mode_default", "fullscreen_mode_off_short",
+    "fullscreen_mode_fit_short", "fullscreen_mode_stretch_short", "fullscreen_mode_fill_short",
+    "fullscreen_mode_integer_short", "screen_alignment_center", "screen_alignment_top",
+    "screen_alignment_bottom", "screen_alignment_center_short", "screen_alignment_top_short",
+    "screen_alignment_bottom_short",
+    # Frame generation options (7)
+    "frame_generation_off", "frame_generation_bionic", "frame_generation_lsfg",
+    "frame_generation_lsfg_native", "frame_generation_wfg", "frame_generation_model_default",
+    "frame_generation_model_bidirectional",
+    # Renderer / present mode / container default options (8)
+    "renderer_native_backend_auto", "renderer_native_backend_asr", "renderer_native_backend_flip",
+    "renderer_present_mode_fifo", "renderer_present_mode_mailbox", "renderer_present_mode_immediate",
+    "use_container_default", "force_ssbs_container_default",
+}
+
 
 def filter_xml_against_default(src_xml: Path, default_xmls: list[Path], existing_ja_xml: Path | None = None) -> str:
     """Keep only resource items present in default values/ and not already defined in existing values-ja/."""
@@ -34,7 +65,11 @@ def filter_xml_against_default(src_xml: Path, default_xmls: list[Path], existing
     for e in src_root:
         if e.tag in valid_by_tag and "name" in e.attrib:
             name = e.attrib["name"]
-            if name not in valid_by_tag[e.tag] or name in existing_by_tag[e.tag]:
+            if (
+                name not in valid_by_tag[e.tag]
+                or name in existing_by_tag[e.tag]
+                or (e.tag == "string" and name in KEEP_ENGLISH_OPTION_STRINGS)
+            ):
                 drop_names.add((e.tag, name))
 
     if not drop_names:
