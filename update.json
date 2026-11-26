@@ -27,10 +27,10 @@
   "publishedAt": "2026-11-25",
   "minSupported": 1,
   "size": {
-    "com.winlator.banner": 603520841
+    "com.winlator.banner": 603530505
   },
   "apkSha256": {
-    "com.winlator.banner": "b89da78773aeb2824b2ca7ca7c998b139450020a0b90c510a4182d4c1f7eeaaf"
+    "com.winlator.banner": "187be450ab919730fcc90287c483b0872b37cb6439bfdcf25ddb2f2e86f60142"
   },
   "apkUrl": {
     "com.winlator.banner": "https://github.com/stingxs/Bannerlator-ja/releases/download/3.2.2/Bannerlator-3.2.2-standard.apk"
